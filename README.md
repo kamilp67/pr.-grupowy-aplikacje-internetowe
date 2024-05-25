@@ -20,7 +20,7 @@ I plan to expand it by adding a backend server to handle various functionalities
 1. Clone the repo
    
    ```sh
-   git clone https://github.com/rabarbar15/bookstore-app.git
+   git clone https://github.com/kamilp67/pr.-grupowy-aplikacje-internetowe.git
    ```   
 3. Go to project directory and build using Docker Compose
      
