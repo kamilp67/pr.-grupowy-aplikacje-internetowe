@@ -76,7 +76,7 @@ const Payment = () => {
       </Container>) : (
         <>
           <h5 className='p-4'>You have no books selected yet :c</h5>
-          <img src="../public/imgs/meme.png" alt="" style={{ width: "30vw", marginLeft: "1.5rem"}} className='rounded shadow-sm'/>
+          {/* <img src="../public/imgs/meme.png" alt="" style={{ width: "30vw", marginLeft: "1.5rem"}} className='rounded shadow-sm'/> */}
         </>
       )}
     </>
