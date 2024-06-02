@@ -5,6 +5,7 @@ import { Products } from './pages/Books'
 import { Navbar } from './components/Navbar'
 import { ShoppingCartProvider } from './context/ShoppingCartContext'
 import Payments from './pages/Payments'
+import { Warehouse } from "./pages/Warehouse";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route path='/' element={<Home />}></Route>
           <Route path='/payments' element={<Payments />}></Route>
           <Route path='/books' element={<Products />}></Route>
+          <Route path="/warehouse" element={<Warehouse />} />
         </Routes>
       </Container>
     </ShoppingCartProvider>

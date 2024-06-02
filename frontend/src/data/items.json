@@ -4,21 +4,26 @@
     "name": "Drakula",
     "author": "Bram Stoker",
     "price": 10.99,
-    "imgUrl": "/imgs/drakula.jpg"
+    "imgUrl": "/imgs/drakula.jpg",
+    "stockCount": 10
+
+
   },
   {
     "id": 2,
     "name": "Dwie wieże",
     "author": "J. R. Tolkien",
     "price": 11.99,
-    "imgUrl": "/imgs/dwie-wieze.jpg"
+    "imgUrl": "/imgs/dwie-wieze.jpg",
+    "stockCount": 10
   },
   {
     "id": 3,
     "name": "Jobs",
     "author": "Walter Isaacson",
     "price": 1.05,
-    "imgUrl": "/imgs/jobs.jpg"
+    "imgUrl": "/imgs/jobs.jpg",
+    "stockCount": 10
   },
   {
     "id": 4,

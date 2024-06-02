@@ -11,6 +11,7 @@ export const Navbar = () => {
         <Nav className='me-auto'>
           <Nav.Link to="/books" as={NavLink}>Books</Nav.Link>
           <Nav.Link to="/payments" as={NavLink}>Payments</Nav.Link>
+          <Nav.Link to="/warehouse" as={NavLink}>Warehouse</Nav.Link> 
         </Nav>
         
         <Button onClick={ openCart } className='btn-success'>
