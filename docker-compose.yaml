@@ -7,3 +7,11 @@ services:
       - "5173"
     volumes:
       - "./frontend:/frontend"
+  magazyn:
+    build: ./magazyn
+    ports:
+      - "5170:5170"
+    expose:
+      - "5170"
+    volumes:
+      - "./magazyn:/magazyn"
