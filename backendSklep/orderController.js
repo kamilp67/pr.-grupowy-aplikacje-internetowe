@@ -3,12 +3,13 @@ const { Order, OrderItems } = require('./model')
 exports.getAllOrders = async (req, res) => {
     
     try {
-      const userId = res.locals.user.dataValues.id
-      const orders = await Order.findAll({
-        where: {
-            userId: userId
-        }
-      })
+    //   const userId = res.locals.user.dataValues.id
+    //   const orders = await Order.findAll({
+    //     where: {
+    //         userId: userId
+    //     }
+    //   })
+      const orders = await Order.findAll()
       res.json(orders)
     } catch (error) {
     //   console.error(error);
