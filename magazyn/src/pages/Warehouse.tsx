@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Button, Form, Modal, Table } from "react-bootstrap";
 import { formatCurrency } from "../utilities/formatCurrency";
 import items from "../data/items.json";
-import { auth } from "../firebaseConfig";
 
 type ItemType = {
   id: number;
@@ -13,35 +12,17 @@ type ItemType = {
   stockCount: number;
 };
 
-type UserType = {
-  id: number;
-  username: string;
-  position: string;
-};
-
 export function Warehouse() {
   const [warehouseItems, setWarehouseItems] = useState<ItemType[]>([]); 
-  const [showModal, setShowModal] = useState(false);
-  const [editingItem, setEditingItem] = useState<ItemType | null>(null);
-  const [user, setUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     setWarehouseItems(items); 
-
-    const unsubscribe = auth.onAuthStateChanged((user:any) => {
-      setUser(user);
-    });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
-  const handleSaveItem = (item: ItemType) => {
-    if (!user || !user.position || user.position !== 'employee') {
-      return;
-    }
+  const [showModal, setShowModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<ItemType | null>(null);
 
+  const handleSaveItem = (item: ItemType) => {
     if (editingItem) {
       setWarehouseItems((prevItems) =>
         prevItems.map((i) => (i.id === item.id ? item : i))
@@ -65,10 +46,6 @@ export function Warehouse() {
   };
 
   const handleDeleteItem = (id: number) => {
-    if (!user || !user.position || user.position !== 'employee') {
-      return;
-    }
-
     setWarehouseItems((prevItems) =>
       prevItems.filter((item) => item.id !== id)
     );
@@ -77,11 +54,9 @@ export function Warehouse() {
   return (
     <>
       <h1>Warehouse Management</h1>
-      {user && user.position === 'employee' && ( 
-        <Button variant="primary" onClick={() => setShowModal(true)}>
-          Add New Item
-        </Button>
-      )}
+      <Button variant="primary" onClick={() => setShowModal(true)}>
+        Add New Item
+      </Button>
       <Table striped bordered hover className="mt-4">
         <thead>
           <tr>
@@ -110,22 +85,18 @@ export function Warehouse() {
                 />
               </td>
               <td>
-                {user && user.position === 'employee' && ( 
-                  <>
-                    <Button
-                      variant="warning"
-                      onClick={() => handleEditItem(item)}
-                    >
-                      Edit
-                    </Button>{" "}
-                    <Button
-                      variant="danger"
-                      onClick={() => handleDeleteItem(item.id)}
-                    >
-                      Delete
-                    </Button>
-                  </>
-                )}
+                <Button
+                  variant="warning"
+                  onClick={() => handleEditItem(item)}
+                >
+                  Edit
+                </Button>{" "}
+                <Button
+                  variant="danger"
+                  onClick={() => handleDeleteItem(item.id)}
+                >
+                  Delete
+                </Button>
               </td>
             </tr>
           ))}
