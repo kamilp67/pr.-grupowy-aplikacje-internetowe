@@ -10,8 +10,8 @@ services:
   magazyn:
     build: ./magazyn
     ports:
-      - "5170:5170"
+      - "5174:5174"
     expose:
-      - "5170"
+      - "5174"
     volumes:
       - "./magazyn:/magazyn"

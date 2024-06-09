@@ -10,6 +10,6 @@ RUN npm install
 
 VOLUME /magazyn/node_modules
 
-EXPOSE 5170
+EXPOSE 5174
 
 CMD ["sh", "-c", "cd /magazyn && npm run dev -- --host"]

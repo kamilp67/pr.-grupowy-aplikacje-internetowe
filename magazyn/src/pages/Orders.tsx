@@ -3,18 +3,20 @@ import { Button, Form, Modal, Table } from "react-bootstrap";
 import axios from "axios";
 import { formatCurrency } from "../utilities/formatCurrency";
 
+type OrderItemType = {
+    id: number;
+    orderId: number;
+    bookId: number;
+    quantity: number;
+};
+
 type OrderType = {
     id: number;
     userId: number;
     address: string;
     price: number;
     status: string;
-    orderItems: {
-        id: number;
-        orderId: number;
-        bookId: number;
-        quantity: number;
-    }[];
+    orderItems: OrderItemType[];
 };
 
 export function Orders() {
@@ -22,25 +24,26 @@ export function Orders() {
     const [showModal, setShowModal] = useState(false);
     const [editingOrder, setEditingOrder] = useState<OrderType | null>(null);
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
     const fetchOrders = async () => {
         try {
             const response = await axios.get('/api/orders');
+            console.log(response.data);
             setOrders(response.data);
         } catch (error) {
             console.error("There was an error fetching the orders!", error);
         }
     };
 
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
     const handleSaveOrder = async (order: OrderType) => {
         try {
             if (editingOrder) {
                 await axios.put(`/api/orders/${order.id}`, order);
                 setOrders((prevOrders) =>
-                    prevOrders.map((o) => ( o.id === order.id ? order : o ))
+                    prevOrders.map((o) => (o.id === order.id ? order : o))
                 );
             } else {
                 const response = await axios.post('/api/orders', order);
@@ -70,46 +73,51 @@ export function Orders() {
     return (
         <>
             <h1>Orders Management</h1>
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-                Add New Order
-            </Button>
-            <Table striped bordered hover className="mt-4">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Address</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {orders.map((order) => (
-                    <tr key={order.id}>
-                        <td>{order.id}</td>
-                        <td>{order.userId}</td>
-                        <td>{order.address}</td>
-                        <td>{formatCurrency(order.price)}</td>
-                        <td>{order.status}</td>
-                        <td>
-                            <Button
-                                variant="warning"
-                                onClick={() => handleEditOrder(order)}
-                            >
-                                Edit
-                            </Button>{" "}
-                            <Button
-                                variant="danger"
-                                onClick={() => handleDeleteOrder(order.id)}
-                            >
-                                Delete
-                            </Button>
-                        </td>
+            {Array.isArray(orders) && orders.length === 0 ? (
+                <p>No orders available</p>
+            ) : (
+                <Table striped bordered hover className="mt-4">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Address</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Order Items</th>
+                        <th>Actions</th>
                     </tr>
-                ))}
-                </tbody>
-            </Table>
+                    </thead>
+                    <tbody>
+                    {Array.isArray(orders) && orders.map((order) => (
+                        <tr key={order.id}>
+                            <td>{order.id}</td>
+                            <td>{order.userId}</td>
+                            <td>{order.address}</td>
+                            <td>{formatCurrency(order.price)}</td>
+                            <td>{order.status}</td>
+                            <td>
+                                <ul>
+                                    {order.orderItems.map((item) => (
+                                        <li key={item.id}>
+                                            Book ID: {item.bookId}, Quantity: {item.quantity}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </td>
+                            <td>
+                                <Button
+                                    variant="warning"
+                                    onClick={() => handleEditOrder(order)}
+                                >
+                                    Edit
+                                </Button>{" "}
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </Table>
+            )}
             <OrderModal
                 show={showModal}
                 handleClose={() => {
@@ -140,7 +148,7 @@ function OrderModal({
     const [address, setAddress] = useState(editingOrder?.address || "");
     const [price, setPrice] = useState(editingOrder?.price || 0);
     const [status, setStatus] = useState(editingOrder?.status || "");
-    const [orderItems, setOrderItems] = useState(editingOrder?.orderItems || []);
+    const [orderItems, setOrderItems] = useState<OrderItemType[]>(editingOrder?.orderItems || []);
 
     useEffect(() => {
         if (editingOrder) {
@@ -208,6 +216,53 @@ function OrderModal({
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
                         />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formOrderItems">
+                        <Form.Label>Order Items</Form.Label>
+                        <Table>
+                            <thead>
+                            <tr>
+                                <th>Book ID</th>
+                                <th>Quantity</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {orderItems.map((item, index) => (
+                                <tr key={index}>
+                                    <td>
+                                        <Form.Control
+                                            type="number"
+                                            value={item.bookId}
+                                            onChange={(e) => {
+                                                const updatedItems = [...orderItems];
+                                                updatedItems[index].bookId = Number(e.target.value);
+                                                setOrderItems(updatedItems);
+                                            }}
+                                        />
+                                    </td>
+                                    <td>
+                                        <Form.Control
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => {
+                                                const updatedItems = [...orderItems];
+                                                updatedItems[index].quantity = Number(e.target.value);
+                                                setOrderItems(updatedItems);
+                                            }}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setOrderItems([...orderItems, { id: 0, orderId: 0, bookId: 0, quantity: 1 }]);
+                            }}
+                        >
+                            Add Item
+                        </Button>
                     </Form.Group>
                 </Form>
             </Modal.Body>

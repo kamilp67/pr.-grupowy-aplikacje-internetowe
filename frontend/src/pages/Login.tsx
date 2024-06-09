@@ -27,9 +27,9 @@ const Login = () => {
         password
       );
       const user = userCredential.user;
-      
-      const userRef = ref(db, "users/" + user.uid); 
-      const userDataSnapshot = await get(userRef); 
+
+      const userRef = ref(db, "users/" + user.uid);
+      const userDataSnapshot = await get(userRef);
       if (userDataSnapshot.exists()) {
         const userData = userDataSnapshot.val();
         if (userData.password === password) {
