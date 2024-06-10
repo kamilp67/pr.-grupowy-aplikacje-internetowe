@@ -3,13 +3,17 @@ import { Form, Button } from "react-bootstrap";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { ref, get } from "firebase/database";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 
-const Login = () => {
+const Login: React.FC = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,16 +25,15 @@ const Login = () => {
     const { email, password } = form;
 
     try {
-      // Sprawdzenie czy użytkownik o podanym adresie email istnieje w bazie danych
       const usersRef = ref(db, "users");
       const usersSnapshot = await get(usersRef);
       let userExists = false;
-      let userPassword = "";
+      let userData: any = null;
       usersSnapshot.forEach((userSnapshot) => {
-        const userData = userSnapshot.val();
-        if (userData.email === email) {
+        const user = userSnapshot.val();
+        if (user.email === email) {
           userExists = true;
-          userPassword = userData.password;
+          userData = user;
         }
       });
 
@@ -39,21 +42,15 @@ const Login = () => {
         return;
       }
 
-      // Porównanie hasła podanego przez użytkownika z hasłem w bazie danych
-      if (password !== userPassword) {
-        setError("Niepoprawne hasło");
-        return;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (user && userData) {
+        setUser(userData);
+        navigate("/warehouse");
+      } else {
+        setError("Wystąpił problem podczas logowania");
       }
-
-      // Logowanie użytkownika
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      // Użytkownik został pomyślnie zalogowany, przekieruj na odpowiednią stronę
-      console.log("Logowanie pomyślne");
     } catch (err: any) {
       setError(err.message);
     }

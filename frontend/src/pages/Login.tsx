@@ -3,13 +3,15 @@ import { Form, Button } from "react-bootstrap";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
 import { ref, get } from "firebase/database";
+import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login: React.FC = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,7 +23,6 @@ const Login = () => {
     const { email, password } = form;
 
     try {
-      // Sprawdzenie czy użytkownik o podanym adresie email istnieje w bazie danych
       const usersRef = ref(db, "users");
       const usersSnapshot = await get(usersRef);
       let userExists = false;
@@ -39,21 +40,11 @@ const Login = () => {
         return;
       }
 
-      // Porównanie hasła podanego przez użytkownika z hasłem w bazie danych
-      if (password !== userPassword) {
+      if (password === userPassword) {
+        navigate("/books");
+      } else {
         setError("Niepoprawne hasło");
-        return;
       }
-
-      // Logowanie użytkownika
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      // Użytkownik został pomyślnie zalogowany, przekieruj na odpowiednią stronę
-      console.log("Logowanie pomyślne");
     } catch (err: any) {
       setError(err.message);
     }

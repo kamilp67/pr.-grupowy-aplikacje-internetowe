@@ -1,20 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Container, Nav, Navbar as NavbarBs } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
-import { auth } from "../firebaseConfig";
+import { useUser } from "../context/UserContext";
 
 export const Navbar = () => {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const { user } = useUser();
 
   return (
     <NavbarBs sticky='top' bg="dark" data-bs-theme="dark" className='shadow-lg mb-3 pb-2'>
