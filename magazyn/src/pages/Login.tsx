@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebaseConfig";
@@ -21,25 +21,39 @@ const Login = () => {
     const { email, password } = form;
 
     try {
+      // Sprawdzenie czy użytkownik o podanym adresie email istnieje w bazie danych
+      const usersRef = ref(db, "users");
+      const usersSnapshot = await get(usersRef);
+      let userExists = false;
+      let userPassword = "";
+      usersSnapshot.forEach((userSnapshot) => {
+        const userData = userSnapshot.val();
+        if (userData.email === email) {
+          userExists = true;
+          userPassword = userData.password;
+        }
+      });
+
+      if (!userExists) {
+        setError("Użytkownik o podanym adresie email nie istnieje");
+        return;
+      }
+
+      // Porównanie hasła podanego przez użytkownika z hasłem w bazie danych
+      if (password !== userPassword) {
+        setError("Niepoprawne hasło");
+        return;
+      }
+
+      // Logowanie użytkownika
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-      const user = userCredential.user;
 
-      const userRef = ref(db, "users/" + user.uid);
-      const userDataSnapshot = await get(userRef);
-      if (userDataSnapshot.exists()) {
-        const userData = userDataSnapshot.val();
-        if (userData.password === password) {
-          console.log("Logowanie pomyślne");
-        } else {
-          setError("Niepoprawne hasło");
-        }
-      } else {
-        setError("Użytkownik nie istnieje");
-      }
+      // Użytkownik został pomyślnie zalogowany, przekieruj na odpowiednią stronę
+      console.log("Logowanie pomyślne");
     } catch (err: any) {
       setError(err.message);
     }
