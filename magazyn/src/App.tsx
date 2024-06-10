@@ -4,7 +4,7 @@ import { Home } from './pages/Home'
 import { Navbar } from './components/Navbar'
 import { Warehouse } from "./pages/Warehouse";
 import { Orders } from "./pages/Orders";
-import { Login } from "/pages/Login";
+import  Login  from "./pages/Login";
 
 function App() {
 
